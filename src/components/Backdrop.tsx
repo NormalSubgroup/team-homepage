@@ -40,7 +40,7 @@ export default function Backdrop() {
       const x = (e.clientX / window.innerWidth) * 100
       const y = (e.clientY / window.innerHeight) * 100
       if (reduced) { proxy.current = { ...proxy.current, x, y }; updateCSS(); return }
-      animate(proxy.current, { x, y, duration: 400, ease: 'easeOutQuad', update: updateCSS })
+      animate(proxy.current, { x, y, duration: 400, ease: 'easeOutQuad', onUpdate: updateCSS })
     }
 
     // Springs for natural-feel transitions (per Anime v4 docs)
@@ -51,12 +51,12 @@ export default function Backdrop() {
       // On blur/hidden: spotlight "散开" — expand radius and soften intensity
       const target = { scale: 5, fade: 0.24 }
       if (reduced) { proxy.current = { ...proxy.current, ...target }; updateCSS(); return }
-      animate(proxy.current, { ...target, ease: scatterSpring, update: updateCSS })
+      animate(proxy.current, { ...target, ease: scatterSpring, onUpdate: updateCSS })
     }
     const focusBack = () => {
       const target = { scale: 1, fade: 1 }
       if (reduced) { proxy.current = { ...proxy.current, ...target }; updateCSS(); return }
-      animate(proxy.current, { ...target, ease: settleSpring, update: updateCSS })
+      animate(proxy.current, { ...target, ease: settleSpring, onUpdate: updateCSS })
     }
 
     const onBlur = () => relax()

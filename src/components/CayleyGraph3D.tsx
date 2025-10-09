@@ -254,15 +254,17 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
     draw()
 
     // V4 animate: linear yaw rotation; respect reduced-motion
-    if (doAnimate && !reduced) {
+    const startSpin = () => {
+      if (!doAnimate || reduced) return
       animRef.current = animate(stateRef.current, {
         yaw: stateRef.current.yaw + Math.PI * 2,
         duration: 30000,
         ease: 'linear',
         loop: true,
-        update: draw
+        onUpdate: draw,
       })
     }
+    if (doAnimate && !reduced) startSpin()
 
     const ro = new ResizeObserver(() => { setSize(); draw() })
     ro.observe(canvas)
@@ -304,9 +306,10 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
       const { vx, vy } = dragRef.current
       if (Math.abs(vx) + Math.abs(vy) > 0.001 && !reduced) {
         const target = { yaw: stateRef.current.yaw + vx * 800, pitch: stateRef.current.pitch + vy * 800 }
-        animRef.current = animate(stateRef.current, { ...target, duration: 1200, ease: 'easeOutCubic', update: draw })
+        animate(stateRef.current, { ...target, duration: 1200, ease: 'easeOutCubic', onUpdate: draw })
+          .then(() => startSpin())
       } else {
-        draw()
+        startSpin()
       }
     }
     const onPointerLeave = () => {
