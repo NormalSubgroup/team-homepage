@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import katex from 'katex'
 import { animate } from 'animejs'
 import { useReducedMotion } from '../utils/motion'
+import members, { founder } from '../data/team'
 
 type Props = {
   n?: number
@@ -16,6 +17,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const layerRef = useRef<HTMLDivElement | null>(null)
   const labelsRef = useRef<HTMLDivElement[]>([])
+  const tooltipRef = useRef<HTMLDivElement | null>(null)
   const animRef = useRef<any>(null)
   const stateRef = useRef({ yaw: 0, pitch: -0.35 })
   const dragRef = useRef({ active: false, x: 0, y: 0, vx: 0, vy: 0, t: 0 })
@@ -58,6 +60,18 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
         layer.appendChild(el)
         labelsRef.current.push(el)
       }
+    }
+    // Init tooltip
+    if (tooltipRef.current) {
+      const tip = tooltipRef.current
+      tip.style.position = 'absolute'
+      tip.style.left = '0px'
+      tip.style.top = '0px'
+      tip.style.transform = 'translate(-50%, -100%)'
+      tip.style.pointerEvents = 'none'
+      tip.style.userSelect = 'none'
+      tip.style.display = 'none'
+      tip.style.zIndex = '999'
     }
 
     const base: Array<[number, number, number]> = []
@@ -208,6 +222,30 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
           el.style.transform = `translate(-50%, -50%) scale(${i === hoverIdx ? 1.05 : 1})`
         }
       }
+
+      // Tooltip content and positioning
+      if (tooltipRef.current) {
+        const tip = tooltipRef.current
+        if (hoverIdx >= 0) {
+          const p = pts[hoverIdx]
+          tip.style.left = `${p.x}px`
+          tip.style.top = `${p.y - 24}px`
+          tip.style.opacity = `${(p.z < 0 ? 0.6 : 1)}`
+
+          // Resolve member by order: 0 -> founder, others map to members[i-1]
+          let labelText = ''
+          if (hoverIdx === 0 && founder) {
+            labelText = founder.id
+          } else {
+            const m = members[hoverIdx - 1]
+            labelText = m ? m.id : (hoverIdx === 0 ? 'e' : `a^${hoverIdx}`)
+          }
+          tip.textContent = labelText
+          tip.style.display = 'block'
+        } else {
+          tip.style.display = 'none'
+        }
+      }
     }
 
     draw()
@@ -267,9 +305,15 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
         draw()
       }
     }
+    const onPointerLeave = () => {
+      hoverRef.current.i = null
+      if (tooltipRef.current) tooltipRef.current.style.display = 'none'
+      draw()
+    }
     canvas.addEventListener('pointerdown', onPointerDown)
     window.addEventListener('pointermove', onPointerMove)
     window.addEventListener('pointerup', onPointerUp)
+    canvas.addEventListener('pointerleave', onPointerLeave)
 
     return () => {
       ro.disconnect()
@@ -279,13 +323,16 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
       canvas.removeEventListener('pointerdown', onPointerDown)
       window.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('pointerup', onPointerUp)
+      canvas.removeEventListener('pointerleave', onPointerLeave)
     }
   }, [n, generators.join(','), doAnimate, reduced, showLabels])
 
   return (
     <div className="cayley-wrap" style={{ position: 'relative' }}>
       <canvas ref={canvasRef} className="cayley-canvas" aria-label={`Cayley graph 3D of C_${n}`} />
-      <div ref={layerRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
+      <div ref={layerRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        <div ref={tooltipRef} className="cayley-tooltip" aria-hidden="true" />
+      </div>
     </div>
   )
 }
