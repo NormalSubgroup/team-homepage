@@ -1,8 +1,9 @@
 name: Deploy Pages
 
 on:
-  push:
-    branches: [ main ]
+  workflow_run:
+    workflows: ["CI", "CodeQL"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -17,34 +18,61 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.gate.outputs.ready }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Gate on CI and CodeQL (for the same SHA)
+        id: gate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -e
+          echo "Checking gates for $OWNER/$REPO @ $SHA"
+          ci=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/actions/workflows/ci.yml/runs?head_sha=$SHA" | jq -r '.workflow_runs[0].conclusion // empty')
+          cq=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/actions/workflows/codeql.yml/runs?head_sha=$SHA" | jq -r '.workflow_runs[0].conclusion // empty')
+          echo "CI: $ci, CodeQL: $cq"
+          ready=false
+          if [ "$ci" = "success" ] && [ "$cq" = "success" ]; then ready=true; fi
+          echo "ready=$ready" >> $GITHUB_OUTPUT
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
+        if: ${{ steps.gate.outputs.ready == 'true' }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: '1.1.30'
+        if: ${{ steps.gate.outputs.ready == 'true' }}
 
       - name: Install deps (bun)
         run: |
           bun install || bun install --no-save
+        if: ${{ steps.gate.outputs.ready == 'true' }}
 
       - name: Build site (Vite)
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
         run: bun run build
+        if: ${{ steps.gate.outputs.ready == 'true' }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
+        if: ${{ steps.gate.outputs.ready == 'true' }}
 
   deploy:
     needs: build
@@ -52,6 +80,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    if: ${{ needs.build.outputs.ready == 'true' }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
