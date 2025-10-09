@@ -21,7 +21,7 @@ export default function TeamTitle({ text }: Props) {
   const [ready, setReady] = useState(false)
 
   // Render text from env or prop
-  const teamName = text ?? (import.meta.env.VITE_TEAM_NAME || 'Team')
+  const teamName = text ?? (import.meta.env.VITE_TEAM_NAME || '正规子群')
 
   useEffect(() => {
     if (!pathRef.current) return
