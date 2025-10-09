@@ -21,10 +21,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
-          bun-version: '1.x'
+          bun-version: '1.1.30'
 
       - name: Install deps (bun)
         run: |
@@ -32,7 +36,7 @@ jobs:
 
       - name: Build site (Vite)
         env:
-          BASE_PATH: "/team-homepage/"
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
         run: bun run build
 
       - name: Upload artifact
@@ -50,4 +54,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-

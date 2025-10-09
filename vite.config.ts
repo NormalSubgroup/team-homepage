@@ -6,6 +6,7 @@ import react from '@vitejs/plugin-react'
 // Add Rolldown's advancedChunks while keeping Rollup's manualChunks for compatibility.
 export default defineConfig(({ command }) => {
   return {
+    base: process.env.BASE_PATH || '/',
     plugins: [react()],
     server: {
       // Warm up commonly-hit modules to avoid initial transform waterfalls in dev
