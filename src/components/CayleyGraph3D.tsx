@@ -22,6 +22,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
   const stateRef = useRef({ yaw: 0, pitch: -0.35 })
   const dragRef = useRef({ active: false, x: 0, y: 0, vx: 0, vy: 0, t: 0 })
   const hoverRef = useRef<{ i: number | null; x: number; y: number }>({ i: null, x: 0, y: 0 })
+  const pointerInsideRef = useRef(false)
   const reduced = useReducedMotion()
 
   useEffect(() => {
@@ -181,15 +182,17 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
       }
 
       // Nodes with hover highlight; behind hemisphere dimmed
-      const hx = hoverRef.current.x, hy = hoverRef.current.y
+      const usingPointer = pointerInsideRef.current
+      const tx = usingPointer ? hoverRef.current.x : w / 2
+      const ty = usingPointer ? hoverRef.current.y : h / 2
       let nearest = { i: -1 as number, d2: 1e9 }
       for (let i = 0; i < n; i++) {
         const p = pts[i]
-        const dx = p.x - hx, dy = p.y - hy
+        const dx = p.x - tx, dy = p.y - ty
         const d2 = dx * dx + dy * dy
         if (d2 < nearest.d2) nearest = { i, d2 }
       }
-      const hoverIdx = dragRef.current.active ? -1 : (nearest.d2 < 36 ? nearest.i : -1)
+      const hoverIdx = dragRef.current.active ? -1 : (usingPointer && nearest.d2 > 36 ? -1 : nearest.i)
       hoverRef.current.i = hoverIdx >= 0 ? hoverIdx : null
       for (let i = 0; i < n; i++) {
         const p = pts[i]
@@ -276,6 +279,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
     }
     const onPointerMove = (e: PointerEvent) => {
       const rect = canvas.getBoundingClientRect()
+      pointerInsideRef.current = true
       hoverRef.current.x = e.clientX - rect.left
       hoverRef.current.y = e.clientY - rect.top
       if (!dragRef.current.active) { draw(); return }
@@ -306,8 +310,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
       }
     }
     const onPointerLeave = () => {
-      hoverRef.current.i = null
-      if (tooltipRef.current) tooltipRef.current.style.display = 'none'
+      pointerInsideRef.current = false
       draw()
     }
     canvas.addEventListener('pointerdown', onPointerDown)
