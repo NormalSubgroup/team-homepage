@@ -5,7 +5,7 @@ import { useReducedMotion } from '../utils/motion'
 import { Icon } from '@iconify/react'
 import MemberCard from './MemberCard'
 import members, { founder } from '../data/team'
-// import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 type Props = {
   group?: 'Cn' | 'D4'
@@ -93,11 +93,7 @@ export default function GroupPanel({ group = 'Cn' }: Props) {
           }}
         />
         {caption && <p className="muted">{caption}</p>}
-        {founder && (
-          <div className="special-member">
-            <MemberCard member={founder} index={-1} wide />
-          </div>
-        )}
+        {founder && <FounderCappedCard member={founder} />}
       </div>
 
       <div className="panel group-graph" role="figure" aria-label="Cayley graph">
@@ -111,5 +107,40 @@ export default function GroupPanel({ group = 'Cn' }: Props) {
         />
       </div>
     </section>
+  )
+}
+
+function FounderCappedCard({ member }: { member: import('../types').UserProfile }) {
+  const hostRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    const host = hostRef.current
+    if (!host) return
+
+    const apply = () => {
+      const probe = document.querySelector<HTMLElement>('.grid .card')
+      if (probe) {
+        const rect = probe.getBoundingClientRect()
+        const w = Math.max(1, Math.round(rect.width))
+        const h = Math.max(1, Math.round(w * 0.66))
+        host.style.setProperty('--card-w', w + 'px')
+        host.style.setProperty('--card-h', h + 'px')
+      }
+    }
+
+    // initial and deferred measures
+    apply()
+    const t = setTimeout(apply, 50)
+    const ro = new ResizeObserver(apply)
+    const grid = document.querySelector('.grid') as HTMLElement | null
+    if (grid) ro.observe(grid)
+    window.addEventListener('resize', apply)
+    return () => { clearTimeout(t); ro.disconnect(); window.removeEventListener('resize', apply) }
+  }, [])
+
+  return (
+    <div ref={hostRef} className="special-member">
+      <MemberCard member={member} index={-1} wide />
+    </div>
   )
 }
