@@ -1,0 +1,81 @@
+import React, { useEffect, useRef } from 'react'
+import { animate, createSpring } from 'animejs'
+import { useReducedMotion } from '../utils/motion'
+
+export default function Backdrop() {
+  const reduced = useReducedMotion()
+  type SpotState = { x: number; y: number; scale: number; fade: number }
+  const proxy = useRef<SpotState>({ x: 50, y: 20, scale: 1, fade: 1 }) // percentage + visual intensity
+  const gridAnimRef = useRef<any>(null)
+
+  useEffect(() => {
+    const root = document.documentElement
+    const updateCSS = () => {
+      root.style.setProperty('--spot-x', proxy.current.x + '%')
+      root.style.setProperty('--spot-y', proxy.current.y + '%')
+      root.style.setProperty('--spot-scale', String(proxy.current.scale))
+      root.style.setProperty('--spot-fade', String(proxy.current.fade))
+    }
+    updateCSS()
+
+    // Subtle animated drift for dense background grid
+    if (reduced) {
+      root.style.setProperty('--grid-x', '0px')
+      root.style.setProperty('--grid-y', '0px')
+    } else {
+      try {
+        gridAnimRef.current = animate(root as any, {
+          ['--grid-x' as any]: ['0px', '12px'],
+          ['--grid-y' as any]: ['0px', '-12px'],
+          duration: 80000,
+          ease: 'linear',
+          loop: true,
+          // alternate to avoid jump when looping
+          alternate: true,
+        })
+      } catch {}
+    }
+
+    const onMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth) * 100
+      const y = (e.clientY / window.innerHeight) * 100
+      if (reduced) { proxy.current = { ...proxy.current, x, y }; updateCSS(); return }
+      animate(proxy.current, { x, y, duration: 400, ease: 'easeOutQuad', update: updateCSS })
+    }
+
+    // Springs for natural-feel transitions (per Anime v4 docs)
+    const scatterSpring = createSpring({ mass: 1, stiffness: 70, damping: 14, velocity: 0 })
+    const settleSpring = createSpring({ mass: 1, stiffness: 130, damping: 22, velocity: 0 })
+
+    const relax = () => {
+      // On blur/hidden: spotlight "散开" — expand radius and soften intensity
+      const target = { scale: 5, fade: 0.24 }
+      if (reduced) { proxy.current = { ...proxy.current, ...target }; updateCSS(); return }
+      animate(proxy.current, { ...target, ease: scatterSpring, update: updateCSS })
+    }
+    const focusBack = () => {
+      const target = { scale: 1, fade: 1 }
+      if (reduced) { proxy.current = { ...proxy.current, ...target }; updateCSS(); return }
+      animate(proxy.current, { ...target, ease: settleSpring, update: updateCSS })
+    }
+
+    const onBlur = () => relax()
+    const onFocus = () => focusBack()
+    const onVisChange = () => (document.hidden ? relax() : focusBack())
+
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('blur', onBlur)
+    window.addEventListener('focus', onFocus)
+    document.addEventListener('visibilitychange', onVisChange)
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('blur', onBlur)
+      window.removeEventListener('focus', onFocus)
+      document.removeEventListener('visibilitychange', onVisChange)
+      try { gridAnimRef.current && gridAnimRef.current.pause && gridAnimRef.current.pause() } catch {}
+    }
+  }, [reduced])
+
+  // Render nothing; background is drawn via body::after to avoid first-paint flicker
+  return null
+}

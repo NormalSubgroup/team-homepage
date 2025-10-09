@@ -1,0 +1,115 @@
+import React from 'react'
+import katex from 'katex'
+import CayleyGraph3D from './CayleyGraph3D'
+import { useReducedMotion } from '../utils/motion'
+import { Icon } from '@iconify/react'
+import MemberCard from './MemberCard'
+import members, { founder } from '../data/team'
+// import { useEffect, useRef } from 'react'
+
+type Props = {
+  group?: 'Cn' | 'D4'
+}
+
+export default function GroupPanel({ group = 'Cn' }: Props) {
+  const reduced = useReducedMotion()
+  const total = (members?.length || 0) + (founder ? 1 : 0)
+  const [presentation, caption] = (() => {
+    if (group === 'Cn') {
+      return [
+        String.raw`\mathbb{Z}_8 = \langle a \mid a^8 = e \rangle`,
+        ''
+      ] as const
+    }
+    // D4 presentation and a generic caption
+    return [
+      String.raw`D_4 = \langle r, s \mid r^4 = e,\ s^2 = e,\ srs = r^{-1} \rangle`,
+      '二面体群 D₄ 的表示（示意）'
+    ] as const
+  })()
+  const finalPresentation = group === 'Cn'
+    ? `\\mathbb{Z}_{${total}} = \\langle a \\mid a^{${total}} = e \\rangle`
+    : presentation
+
+  return (
+    <section className="group-section">
+      <div className="panel group-info" role="group" aria-label="Group presentation">
+        <div className="panel-head">
+          <h3 className="panel-title">Group Presentation</h3>
+          <nav className="badges" aria-label="Team links">
+            <a
+              className="badge badge-ctftime"
+              href="https://ctftime.org/team/365958"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="CTFtime team"
+              title="CTFtime"
+            >
+              <Icon icon="mdi:trophy" width={20} height={20} aria-hidden="true" />
+              <span className="sr-only">CTFtime</span>
+            </a>
+            <a
+              className="badge badge-github"
+              href="https://github.com/NormalSubgroup"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub org"
+              title="GitHub"
+            >
+              <Icon icon="simple-icons:github" width={20} height={20} aria-hidden="true" />
+              <span className="sr-only">GitHub</span>
+            </a>
+            <a
+              className="badge badge-blog"
+              href="https://normalsubgroup.cauchy.top/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Team Blog"
+              title="Blog"
+            >
+              <Icon icon="mdi:book-open-variant" width={20} height={20} aria-hidden="true" />
+              <span className="sr-only">Blog</span>
+            </a>
+            <a
+              className="badge badge-notion"
+              href="https://www.notion.so/416913cdfdda42a78d7d26062f8bed9c"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Notion workspace"
+              title="Notion"
+            >
+              <Icon icon="simple-icons:notion" width={20} height={20} aria-hidden="true" />
+              <span className="sr-only">Notion</span>
+            </a>
+          </nav>
+        </div>
+        <div
+          className="katex-block"
+          ref={(el) => {
+            if (!el) return
+            try {
+              katex.render(finalPresentation, el, { displayMode: true, throwOnError: false, strict: 'ignore' })
+            } catch {}
+          }}
+        />
+        {caption && <p className="muted">{caption}</p>}
+        {founder && (
+          <div className="special-member">
+            <MemberCard member={founder} index={-1} wide />
+          </div>
+        )}
+      </div>
+
+      <div className="panel group-graph" role="figure" aria-label="Cayley graph">
+        <h3 className="panel-title">Cayley Graph</h3>
+        {/* 3D-like projection via canvas + AnimeJS; labels by KaTeX */}
+        <CayleyGraph3D
+          n={Math.max(1, (members?.length || 0) + (founder ? 1 : 0))}
+          generators={(members.length + (founder ? 1 : 0)) <= 2 ? [1] : [1, Math.max(1, Math.floor(((members?.length || 0) + (founder ? 1 : 0)) / 2))]}
+          animate={!reduced}
+          showLabels
+        />
+      </div>
+    </section>
+  )
+}
