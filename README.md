@@ -1,6 +1,19 @@
-# Team Homepage (Vite + React + AnimeJS, Bun)
+# Team Homepage
 
-This project implements a small, animated team homepage using Vite (Rolldown-powered in production), React 18, AnimeJS, and Bun as the package/runtime manager.
+This project implements an animated team homepage with a concise modern stack. See Tech Stack below for an accurate, code‑derived list of tools used in this repository.
+
+## Tech Stack
+
+- Build: Vite 7 (rolldown-vite), @vitejs/plugin-react
+- Bundling: Rolldown advancedChunks, Rollup-compatible manualChunks
+- Language: TypeScript 5
+- Framework: React 19, ReactDOM 19
+- Math typesetting: KaTeX 0.16 (logo and panel formulas)
+- Animation: AnimeJS (background, cards, interactions)
+- Icons: @iconify/react
+- Graphics: Canvas 2D (CayleyGraph, CayleyGraph3D)
+- Styles: Plain CSS (`src/index.css`)
+- Runtime/PM: Bun (`bun.lock` present)
 
 ## Object Structure
 
@@ -26,17 +39,12 @@ See `src/types.ts#L1` and `src/data/team.json#L1`.
 
 - Team name: set `VITE_TEAM_NAME` in `.env` (see `.env.example`).
 
-## Notable Design Decisions (after reading docs)
+## Notes
 
-- Vite 7 + React plugin: `@vitejs/plugin-react` for JSX/HMR.
-- Rolldown bundler: Aliases `vite` to `rolldown-vite@latest` for faster builds.
-- Chunking: Rolldown `advancedChunks` (with Rollup fallback `manualChunks`) groups `react`, `react-dom`, `animejs`, `katex` into a `vendor` chunk.
-- Bun support: Runs `vite` via `bun run` scripts; Bun is fully compatible.
-- AnimeJS: Uses a `timeline` for sequencing and `stagger` for grid entrance.
-- Reduced motion: Respects `prefers-reduced-motion` and short-circuits animations.
-- Performance: `loading="lazy"`, `decoding="async"`, fixed `width/height` for image stability.
- - Backdrop spotlight: Follows cursor; on window blur/visibility hidden it “scatters” (expands and softens), and restores on focus. Honors reduced-motion.
- - Dev warmup: Vite `server.warmup` pre-transforms common modules to avoid initial waterfalls.
+- Vite aliases to rolldown-vite for production builds; Rollup options are kept for compatibility.
+- Chunking groups heavy deps (`react`, `react-dom`, `animejs`, `katex`) into a vendor chunk.
+- Reduced-motion respected throughout; background grid and spotlight animations degrade gracefully.
+- Images use lazy loading and explicit dimensions to reduce layout shift.
 
 ## Add Members
 
