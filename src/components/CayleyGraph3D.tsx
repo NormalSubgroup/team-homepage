@@ -260,7 +260,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
 
     // V4 animate: linear yaw rotation; respect reduced-motion
     const startSpin = () => {
-      if (!doAnimate || (reduced && !alwaysSpin)) return
+      if (!(doAnimate || alwaysSpin) || (reduced && !alwaysSpin)) return
       animRef.current = animate(stateRef.current, {
         yaw: stateRef.current.yaw + Math.PI * 2,
         duration: 30000,
@@ -269,7 +269,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
         onUpdate: draw,
       })
     }
-    if (doAnimate && (!reduced || alwaysSpin)) startSpin()
+    if ((doAnimate || alwaysSpin) && (!reduced || alwaysSpin)) startSpin()
 
     const ro = new ResizeObserver(() => { setSize(); draw() })
     ro.observe(canvas)

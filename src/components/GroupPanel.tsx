@@ -12,6 +12,7 @@ type Props = {
 
 export default function GroupPanel({ group = 'Cn' }: Props) {
   const reduced = useReducedMotion()
+  const alwaysSpin = (import.meta as any).env?.VITE_GRAPH_ALWAYS_SPIN !== 'false'
   const total = (members?.length || 0) + (founder ? 1 : 0)
   const [presentation, caption] = (() => {
     if (group === 'Cn') {
@@ -137,7 +138,7 @@ export default function GroupPanel({ group = 'Cn' }: Props) {
         <CayleyGraph3D
           n={Math.max(1, (members?.length || 0) + (founder ? 1 : 0))}
           generators={(members.length + (founder ? 1 : 0)) <= 2 ? [1] : [1, Math.max(1, Math.floor(((members?.length || 0) + (founder ? 1 : 0)) / 2))]}
-          animate={!reduced}
+          animate={!reduced || alwaysSpin}
           showLabels
         />
       </div>
