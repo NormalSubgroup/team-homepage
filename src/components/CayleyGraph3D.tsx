@@ -31,6 +31,9 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
     if (!canvas || !layer) return
     const ctx = canvas.getContext('2d')!
 
+    // On touch devices, prevent the UA from hijacking gestures (panning/zooming)
+    try { canvas.style.touchAction = 'none' } catch {}
+
     const setSize = () => {
       const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1))
       const rect = canvas.getBoundingClientRect()
@@ -270,7 +273,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
     ro.observe(canvas)
 
     // Interactions: drag to rotate with inertia; hover to highlight
-    const onPointerDown = (e: PointerEvent) => {
+    const onPointerDown = (e: { clientX: number; clientY: number }) => {
       dragRef.current.active = true
       dragRef.current.x = e.clientX
       dragRef.current.y = e.clientY
@@ -279,7 +282,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
       dragRef.current.t = performance.now()
       if (animRef.current && typeof animRef.current.pause === 'function') animRef.current.pause()
     }
-    const onPointerMove = (e: PointerEvent) => {
+    const onPointerMove = (e: { clientX: number; clientY: number }) => {
       const rect = canvas.getBoundingClientRect()
       pointerInsideRef.current = true
       hoverRef.current.x = e.clientX - rect.left
@@ -316,20 +319,64 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
       pointerInsideRef.current = false
       draw()
     }
-    canvas.addEventListener('pointerdown', onPointerDown)
-    window.addEventListener('pointermove', onPointerMove)
-    window.addEventListener('pointerup', onPointerUp)
-    canvas.addEventListener('pointerleave', onPointerLeave)
+    // Feature-detect pointer events; fallback to mouse/touch where missing
+    const supportsPointer = typeof window !== 'undefined' && 'onpointerdown' in window
+    const listeners: Array<() => void> = []
+    if (supportsPointer) {
+      canvas.addEventListener('pointerdown', onPointerDown as any)
+      window.addEventListener('pointermove', onPointerMove as any)
+      window.addEventListener('pointerup', onPointerUp as any)
+      canvas.addEventListener('pointerleave', onPointerLeave)
+      listeners.push(
+        () => canvas.removeEventListener('pointerdown', onPointerDown as any),
+        () => window.removeEventListener('pointermove', onPointerMove as any),
+        () => window.removeEventListener('pointerup', onPointerUp as any),
+        () => canvas.removeEventListener('pointerleave', onPointerLeave),
+      )
+    } else {
+      // Mouse fallback
+      const onMouseDown = (e: MouseEvent) => onPointerDown(e)
+      const onMouseMove = (e: MouseEvent) => onPointerMove(e)
+      const onMouseUp = () => onPointerUp()
+      const onMouseLeave = () => onPointerLeave()
+      canvas.addEventListener('mousedown', onMouseDown)
+      window.addEventListener('mousemove', onMouseMove)
+      window.addEventListener('mouseup', onMouseUp)
+      canvas.addEventListener('mouseleave', onMouseLeave)
+      listeners.push(
+        () => canvas.removeEventListener('mousedown', onMouseDown),
+        () => window.removeEventListener('mousemove', onMouseMove),
+        () => window.removeEventListener('mouseup', onMouseUp),
+        () => canvas.removeEventListener('mouseleave', onMouseLeave),
+      )
+      // Touch fallback (iOS/Safari pre-PointerEvents)
+      const pointFromTouch = (e: TouchEvent) => {
+        const t = e.touches[0] || e.changedTouches[0]
+        return t ? { clientX: t.clientX, clientY: t.clientY } : { clientX: 0, clientY: 0 }
+      }
+      const onTouchStart = (e: TouchEvent) => { e.preventDefault(); onPointerDown(pointFromTouch(e)) }
+      const onTouchMove = (e: TouchEvent) => { e.preventDefault(); onPointerMove(pointFromTouch(e)) }
+      const onTouchEnd = (_e: TouchEvent) => { onPointerUp() }
+      const onTouchCancel = (_e: TouchEvent) => { onPointerLeave() }
+      canvas.addEventListener('touchstart', onTouchStart, { passive: false })
+      window.addEventListener('touchmove', onTouchMove, { passive: false })
+      window.addEventListener('touchend', onTouchEnd)
+      canvas.addEventListener('touchcancel', onTouchCancel)
+      listeners.push(
+        () => canvas.removeEventListener('touchstart', onTouchStart),
+        () => window.removeEventListener('touchmove', onTouchMove as any),
+        () => window.removeEventListener('touchend', onTouchEnd as any),
+        () => canvas.removeEventListener('touchcancel', onTouchCancel),
+      )
+    }
 
     return () => {
       ro.disconnect()
       if (animRef.current && typeof animRef.current.pause === 'function') animRef.current.pause()
       labelsRef.current.forEach((el) => el.remove())
       labelsRef.current = []
-      canvas.removeEventListener('pointerdown', onPointerDown)
-      window.removeEventListener('pointermove', onPointerMove)
-      window.removeEventListener('pointerup', onPointerUp)
-      canvas.removeEventListener('pointerleave', onPointerLeave)
+      // Remove whichever listeners were attached
+      try { listeners.forEach((off) => off()) } catch {}
     }
   }, [n, generators.join(','), doAnimate, reduced, showLabels])
 

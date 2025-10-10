@@ -196,6 +196,14 @@ body::after {
 .katex-block .katex { font-size: 20px; }
 .cayley-wrap { width: 100%; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,.03); }
 .cayley-canvas { width: 100%; height: 100%; display: block; }
+.cayley-canvas {
+  /* Ensure touch panning/zooming doesn't steal pointer events on mobile */
+  touch-action: none;
+  -ms-touch-action: none;
+  user-select: none;
+  cursor: grab;
+}
+.cayley-canvas:active { cursor: grabbing; }
 .cayley-tooltip {
   position: absolute;
   padding: 6px 10px;
