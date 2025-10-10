@@ -55,8 +55,8 @@ jobs:
           cache: 'npm'
         if: ${{ steps.gate.outputs.ready == 'true' }}
 
-      - name: Install deps (npm ci)
-        run: npm ci
+      - name: Install deps (npm)
+        run: npm install --no-package-lock
         if: ${{ steps.gate.outputs.ready == 'true' }}
 
       - name: Build site (Vite)

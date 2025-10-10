@@ -19,8 +19,8 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install deps (npm ci)
-        run: npm ci
+      - name: Install deps (npm)
+        run: npm install --no-package-lock
 
       - name: Typecheck
         run: npm run typecheck
