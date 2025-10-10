@@ -10,7 +10,7 @@ export default function Logo({ formula }: LogoProps) {
 
   useEffect(() => {
     if (!elRef.current) return
-    const expr = formula ?? 'H \\trianglelefteq G'
+    const expr = formula ?? String.raw`\text{Group} = \bigcap_{S \subseteq \text{Crypto} \le G} \text{Crypto}_{\text{graphy}}`
     try {
       katex.render(expr, elRef.current, {
         displayMode: true,

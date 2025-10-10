@@ -92,6 +92,42 @@ export default function GroupPanel({ group = 'Cn' }: Props) {
           }}
         />
         {caption && <p className="muted">{caption}</p>}
+        <div
+          className="katex-block"
+          ref={(el) => {
+            if (!el) return
+            try {
+              katex.render(String.raw`\langle S \rangle = \bigcap \{ H \mid S \subseteq H \text{ 且 } H \le G \}`, el, { displayMode: true, throwOnError: false, strict: 'ignore' })
+            } catch {}
+          }}
+        />
+        <div
+          className="katex-block"
+          ref={(el) => {
+            if (!el) return
+            try {
+              katex.render(String.raw`\langle S \rangle \quad \longleftrightarrow \quad \text{Group}`, el, { displayMode: true, throwOnError: false, strict: 'ignore' })
+            } catch {}
+          }}
+        />
+        <div
+          className="katex-block"
+          ref={(el) => {
+            if (!el) return
+            try {
+              katex.render(String.raw`\{ H \mid S \subseteq H,\ H \le G \} \quad \longleftrightarrow \quad \{ \text{Crypto} \mid S \subseteq \text{Crypto} \le G \}`, el, { displayMode: true, throwOnError: false, strict: 'ignore' })
+            } catch {}
+          }}
+        />
+        <div
+          className="katex-block"
+          ref={(el) => {
+            if (!el) return
+            try {
+              katex.render(String.raw`\text{Crypto}_{\text{graphy}} \quad \longleftrightarrow \quad H`, el, { displayMode: true, throwOnError: false, strict: 'ignore' })
+            } catch {}
+          }}
+        />
         {/* Founder 不再单独展示，已放入成员列表的第一位 */}
       </div>
 
