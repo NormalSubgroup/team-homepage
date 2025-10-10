@@ -20,7 +20,7 @@ export default function App() {
           <Logo />
           <TeamTitle />
         </div>
-        <p className="subtitle">爱好密码学，但不仅仅是密码学</p>
+        <p className="subtitle">爱好密码学，但不仅仅是密码学 · We love cryptography, but not just cryptography</p>
       </header>
 
       <main className="container">
