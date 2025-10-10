@@ -4,6 +4,10 @@ import { useReducedMotion } from '../utils/motion'
 
 export default function Backdrop() {
   const reduced = useReducedMotion()
+  // Feature flag: enable/disable spotlight effect via environment variable
+  // Set VITE_ENABLE_SPOTLIGHT=true in .env to enable
+  const spotlightEnabled = (import.meta as any).env?.VITE_ENABLE_SPOTLIGHT === 'true'
+
   type SpotState = { x: number; y: number; scale: number; fade: number }
   const proxy = useRef<SpotState>({ x: 50, y: 20, scale: 1, fade: 1 }) // percentage + visual intensity
   const gridAnimRef = useRef<any>(null)
@@ -36,6 +40,14 @@ export default function Backdrop() {
       } catch {}
     }
 
+    // Early return if spotlight effect is disabled
+    if (!spotlightEnabled) {
+      return () => {
+        try { gridAnimRef.current && gridAnimRef.current.pause && gridAnimRef.current.pause() } catch {}
+      }
+    }
+
+    // --- Spotlight animation logic (only runs if enabled) ---
     const onMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth) * 100
       const y = (e.clientY / window.innerHeight) * 100
@@ -74,7 +86,7 @@ export default function Backdrop() {
       document.removeEventListener('visibilitychange', onVisChange)
       try { gridAnimRef.current && gridAnimRef.current.pause && gridAnimRef.current.pause() } catch {}
     }
-  }, [reduced])
+  }, [reduced, spotlightEnabled])
 
   // Render nothing; background is drawn via body::after to avoid first-paint flicker
   return null

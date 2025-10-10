@@ -37,7 +37,19 @@ See `src/types.ts#L1` and `src/data/team.json#L1`.
 
 ## Configuration
 
-- Team name: set `VITE_TEAM_NAME` in `.env` (see `.env.example`).
+Environment variables can be set in a `.env` file. See `.env.example` for all available options.
+
+- **Team name**: Set `VITE_TEAM_NAME` to customize the team name displayed in the header.
+- **Spotlight effect**: Set `VITE_ENABLE_SPOTLIGHT=true` to enable the mouse-following spotlight animation. Default: `false` (disabled for performance).
+- **Cayley graph animation**: Set `VITE_GRAPH_ALWAYS_SPIN=true` to keep the Cayley graph rotating even when `prefers-reduced-motion` is set.
+
+Example `.env` file:
+```env
+VITE_TEAM_NAME=Normal Subgroup
+VITE_ENABLE_SPOTLIGHT=false
+VITE_GRAPH_ALWAYS_SPIN=true
+```
+
 
 ## Notes
 
