@@ -48,21 +48,21 @@ jobs:
           enablement: true
         if: ${{ steps.gate.outputs.ready == 'true' }}
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          bun-version: '1.1.30'
+          node-version: '20'
+          cache: 'npm'
         if: ${{ steps.gate.outputs.ready == 'true' }}
 
-      - name: Install deps (bun)
-        run: |
-          bun install || bun install --no-save
+      - name: Install deps (npm ci)
+        run: npm ci
         if: ${{ steps.gate.outputs.ready == 'true' }}
 
       - name: Build site (Vite)
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
-        run: bun run build
+        run: npm run build
         if: ${{ steps.gate.outputs.ready == 'true' }}
 
       - name: Upload artifact
