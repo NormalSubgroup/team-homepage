@@ -17,12 +17,18 @@ export default function MemberCard({ member, index, wide = false }: Props) {
   const innerRef = useRef<HTMLDivElement | null>(null)
   const onImgError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget
-    // 1x1 transparent gif as a safe fallback; the wrapper shows a styled background
+    const triedProxy = img.dataset.pixivFallback === '1'
+    // If the source is a Pixiv CDN URL, attempt a proxy domain once
+    try {
+      const u = new URL(img.src)
+      if (!triedProxy && /(^|\.)i\.pximg\.net$/i.test(u.hostname)) {
+        img.dataset.pixivFallback = '1'
+        img.src = img.src.replace('//i.pximg.net/', '//i.pixiv.re/')
+        return
+      }
+    } catch {}
+    // Final fallback: 1x1 transparent gif to preserve layout
     img.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACw='
-    // Disabled: no need to update fusion background CSS variable
-    // if (avatarWrapRef.current) {
-    //   avatarWrapRef.current.style.setProperty('--avatar-url', 'none')
-    // }
   }
   // const toggleFlip = () => setFlipped((v) => !v) // disabled: no flip
   const onMove = (e: React.MouseEvent) => {
