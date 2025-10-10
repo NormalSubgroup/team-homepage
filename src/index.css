@@ -68,7 +68,18 @@ body::before {
   body::before { bottom: auto; height: 100dvh; left: 0; right: 0; top: 0; }
 }
 
-.page { position: relative; z-index: 1; display: grid; grid-template-rows: auto 1fr auto; min-height: 100%; }
+.page {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100%;
+  /* Prevent horizontal scroll while allowing vertical */
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Ensure all children respect the viewport width */
+  max-width: 100vw;
+}
 
 /* Fixed background spotlight moved to pseudo-element to avoid first-paint flicker */
 body::after {
@@ -164,6 +175,11 @@ body::after {
 .subtitle {
   margin-top: 8px;
   color: var(--muted);
+  /* Ensure subtitle wraps on small screens and doesn't overflow */
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .container { max-width: 1100px; margin: 0 auto; padding: 12px 20px 40px; }
@@ -188,12 +204,82 @@ body::after {
   border: 1px solid transparent;
   border-radius: 14px;
   padding: 16px;
+  /* Prevent panel from exceeding viewport width */
+  max-width: 100%;
+  overflow: hidden;
 }
 .panel-title { margin: 6px 0 12px; color: var(--text); font-weight: 600; }
-.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 6px 0 12px; }
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 6px 0 12px;
+  flex-wrap: wrap;
+}
 .panel-head .panel-title { margin: 0; }
 .muted { color: var(--muted); margin: 8px 0 0; }
-.katex-block .katex { font-size: 20px; }
+
+/* Responsive KaTeX sizing: smaller on mobile, larger on desktop */
+.katex-block .katex {
+  font-size: clamp(14px, 4vw, 20px);
+}
+
+/* Ensure math blocks don't cause horizontal page scroll */
+.katex-block {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Smooth scrolling on touch devices */
+  -webkit-overflow-scrolling: touch;
+  /* Subtle scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.katex-block::-webkit-scrollbar {
+  height: 6px;
+}
+
+.katex-block::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.katex-block::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.katex-block::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Additional mobile optimizations for very small screens (iPhone SE and smaller) */
+@media (max-width: 400px) {
+  /* Make math even smaller on very small screens */
+  .katex-block .katex {
+    font-size: clamp(12px, 3.5vw, 16px);
+  }
+
+  /* Reduce panel padding to maximize content space */
+  .panel {
+    padding: 12px;
+  }
+
+  /* Ensure panel-head elements stack nicely on tiny screens */
+  .panel-head {
+    gap: 8px;
+  }
+
+  /* Smaller container padding */
+  .container {
+    padding: 12px 16px 32px;
+  }
+
+  .hero {
+    padding: 24px 16px 8px;
+  }
+}
 .cayley-wrap { width: 100%; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,.03); }
 .cayley-canvas { width: 100%; height: 100%; display: block; }
 .cayley-canvas {
