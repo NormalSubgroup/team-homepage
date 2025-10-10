@@ -36,7 +36,7 @@
   {
     "id": "DexterJie",
     "avatar": "https://dexterjie.github.io/images/0.jpg",
-    "introduction": "没想好",
+    "introduction": "望远山而前行，知不足而后进",
     "links": [
       "https://dexterjie.github.io/"
     ]
@@ -79,6 +79,31 @@
     "introduction": "命之歧路 何去何从",
     "links": [
       "https://1ces1amese.github.io/"
+    ]
+  },
+  {
+    "id": "hokak",
+    "avatar": "https://static.wikia.nocookie.net/undertale/images/0/0b/Annoying_Dog_sprite.gif",
+    "introduction": "A gamer who specializes in Senren * Banka",
+    "links": [
+      "https://asia-hokak.github.io/"
+    ]
+  },
+  {
+    "id": "堇姬Naup",
+    "avatar": "https://www.pixiv.net/artworks/109678399",
+    "introduction": "A 4002-year-old Demoiselle Crane , 堇姬Naup. Love pwn and web. My current focus include Python, C++、Linux kernel exploitation.",
+    "links": [
+      "https://naupjjin.github.io/",
+      "https://github.com/Naupjjin"
+    ]
+  },
+  {
+    "id": "Quanda",
+    "avatar": "https://i.postimg.cc/HWMdNQ2Q/hokage.jpg",
+    "introduction": "To the Moon",
+    "links": [
+      "https://hackmd.io/@quanda"
     ]
   }
 ]
