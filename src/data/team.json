@@ -19,6 +19,40 @@
     ]
   },
   {
+    "id": "brealid",
+    "avatar": "https://www.brealid.cn/favicon.png",
+    "introduction": "菜, 摆, 摸",
+    "links": [
+      "https://github.com/brealid",
+      "https://brealid.cn"
+    ]
+  },
+  {
+    "id": "Swizzer",
+    "avatar": "https://pic.swizzer.cc/avatar.jpg",
+    "introduction": "No, thank you!",
+    "links": [
+      "https://blog.swizzer.cc/"
+    ]
+  },
+  {
+    "id": "Triode",
+    "avatar": "https://triodelzx.github.io/img/512.png",
+    "introduction": "一个又菜又爱玩的Cryptoer",
+    "links": [
+      "https://triodelzx.github.io/"
+    ]
+  },
+  {
+    "id": "huangx607087",
+    "avatar": "https://q1.qlogo.cn/g?b=qq&s=640&nk=1435756429",
+    "introduction": "研究生了还很菜的CTF-Cryptoer",
+    "links": [
+      "https://github.com/huangx607087",
+      "https://huangx607087.online"
+    ]
+  },
+  {
     "id": "adwa",
     "avatar": "https://languag3.github.io/images/avatar.jpg",
     "introduction": "🦌",
@@ -56,22 +90,6 @@
     "introduction": "阿巴阿巴",
     "links": [
       "https://seandictionary.top"
-    ]
-  },
-  {
-    "id": "Triode",
-    "avatar": "https://triodelzx.github.io/img/512.png",
-    "introduction": "一个又菜又爱玩的Cryptoer",
-    "links": [
-      "https://triodelzx.github.io/"
-    ]
-  },
-  {
-    "id": "Swizzer",
-    "avatar": "https://pic.swizzer.cc/avatar.jpg",
-    "introduction": "No, thank you!",
-    "links": [
-      "https://blog.swizzer.cc/"
     ]
   },
   {
