@@ -40,14 +40,14 @@ See `src/types.ts#L1` and `src/data/team.json#L1`.
 Environment variables can be set in a `.env` file. See `.env.example` for all available options.
 
 - **Team name**: Set `VITE_TEAM_NAME` to customize the team name displayed in the header.
-- **Spotlight effect**: Set `VITE_ENABLE_SPOTLIGHT=true` to enable the mouse-following spotlight animation. Default: `true` (enabled by default).
+- **Spotlight effect**: Enabled by default. Set `VITE_ENABLE_SPOTLIGHT=false` to disable the mouse-following spotlight animation.
 - **Cayley graph animation**: Set `VITE_GRAPH_ALWAYS_SPIN=true` to keep the Cayley graph rotating even when `prefers-reduced-motion` is set.
 
 Example `.env` file:
 ```env
 VITE_TEAM_NAME=Normal Subgroup
-VITE_ENABLE_SPOTLIGHT=true
 VITE_GRAPH_ALWAYS_SPIN=true
+# VITE_ENABLE_SPOTLIGHT=false  # Uncomment to disable spotlight
 ```
 
 

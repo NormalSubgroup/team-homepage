@@ -5,8 +5,8 @@ import { useReducedMotion } from '../utils/motion'
 export default function Backdrop() {
   const reduced = useReducedMotion()
   // Feature flag: enable/disable spotlight effect via environment variable
-  // Set VITE_ENABLE_SPOTLIGHT=true in .env to enable
-  const spotlightEnabled = (import.meta as any).env?.VITE_ENABLE_SPOTLIGHT === 'true'
+  // Enabled by default; set VITE_ENABLE_SPOTLIGHT=false in .env to disable
+  const spotlightEnabled = (import.meta as any).env?.VITE_ENABLE_SPOTLIGHT !== 'false'
 
   type SpotState = { x: number; y: number; scale: number; fade: number }
   const proxy = useRef<SpotState>({ x: 50, y: 20, scale: 1, fade: 1 }) // percentage + visual intensity
