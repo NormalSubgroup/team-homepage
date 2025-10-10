@@ -1,5 +1,5 @@
 :root {
-  /* Apple/Vercel-inspired monochrome palette */
+  /* Apple/Vercel-inspired monochrome palette - Dark Mode */
   --bg: #0a0a0a;
   --card: #111111;
   --text: #fafafa;
@@ -12,6 +12,8 @@
   --grid-x: 0px;           /* animated offset X */
   --grid-y: 0px;           /* animated offset Y */
   --grid-opacity: 0.22;    /* overall grid opacity */
+  --grid-color-1: rgba(255,255,255,.05);  /* grid line color 1 */
+  --grid-color-2: rgba(255,255,255,.04);  /* grid line color 2 */
   --spot-x: 50%;
   --spot-y: 20%;
   --spot-rx: 1000px;
@@ -27,6 +29,36 @@
   /* Subtle ring tint derived from violet */
   --ring: color-mix(in oklch, var(--math-violet) 20%, transparent);
 }
+
+/* Light Mode - Warm, refined palette with distinct character */
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Warm, paper-like base inspired by high-end editorial design */
+    --bg: #f5f3f0;           /* Warm off-white, like natural paper */
+    --card: #fdfcfb;         /* Subtle warm white for cards */
+    --text: #1a1816;         /* Deep warm gray, not pure black */
+    --muted: #6b6662;        /* Warm medium gray */
+    --brand: #1a1816;        /* Match text for cohesion */
+    --brand-2: #3d3935;      /* Warm charcoal */
+    --ring: rgba(26, 24, 22, 0.08);
+
+    /* Delicate grid with warm undertone */
+    --grid-opacity: 0.12;
+    --grid-color-1: rgba(26, 24, 22, .035);
+    --grid-color-2: rgba(26, 24, 22, .025);
+
+    /* Refined accent palette for light mode - warmer, more saturated */
+    --math-gold: oklch(75% 0.14 75);      /* Amber/honey gold */
+    --math-teal: oklch(65% 0.13 195);     /* Sky blue with warmth */
+    --math-violet: oklch(62% 0.15 290);   /* Soft lavender */
+
+    /* Light mode spotlight colors - gentle, luminous */
+    --spot-light-teal: oklch(88% 0.06 195);
+    --spot-light-violet: oklch(85% 0.07 290);
+    --spot-light-gold: oklch(90% 0.05 75);
+  }
+}
+
 
 * { box-sizing: border-box; }
 
@@ -54,14 +86,14 @@ body::before {
   position: fixed; inset: 0; pointer-events: none;
   background:
     repeating-linear-gradient(0deg,
-      rgba(255,255,255,.05) 0,
-      rgba(255,255,255,.05) 1px,
+      var(--grid-color-1) 0,
+      var(--grid-color-1) 1px,
       transparent 1px,
       transparent var(--grid-gap)
     ),
     repeating-linear-gradient(90deg,
-      rgba(255,255,255,.04) 0,
-      rgba(255,255,255,.04) 1px,
+      var(--grid-color-2) 0,
+      var(--grid-color-2) 1px,
       transparent 1px,
       transparent var(--grid-gap)
     );
@@ -141,6 +173,40 @@ body::after {
   body::after { bottom: auto; height: 100dvh; left: 0; right: 0; top: 0; }
 }
 
+/* Light mode spotlight - softer, more luminous effect */
+@media (prefers-color-scheme: light) {
+  body::after {
+    background:
+      /* Primary focus spot (sky blue) */
+      radial-gradient(
+        calc(var(--spot-rx) * var(--spot-scale))
+        calc(var(--spot-ry) * var(--spot-scale))
+        at var(--spot-x) var(--spot-y),
+        var(--spot-light-teal) 0%,
+        color-mix(in oklch, var(--spot-light-teal) 75%, transparent) 35%,
+        transparent 70%
+      ),
+      /* Secondary offset (lavender) */
+      radial-gradient(
+        calc(var(--spot-rx) * 0.9 * var(--spot-scale))
+        calc(var(--spot-ry) * 0.9 * var(--spot-scale))
+        at calc(var(--spot-x) + 18%) calc(var(--spot-y) + 8%),
+        var(--spot-light-violet) 0%,
+        color-mix(in oklch, var(--spot-light-violet) 70%, transparent) 40%,
+        transparent 75%
+      ),
+      /* Tertiary warm accent (golden) */
+      radial-gradient(
+        calc(var(--spot-rx) * 0.75 * var(--spot-scale))
+        calc(var(--spot-ry) * 0.75 * var(--spot-scale))
+        at calc(var(--spot-x) - 22%) calc(var(--spot-y) + 24%),
+        var(--spot-light-gold) 0%,
+        color-mix(in oklch, var(--spot-light-gold) 65%, transparent) 45%,
+        transparent 78%
+      );
+  }
+}
+
 .hero {
   padding: 28px 20px 8px;
   text-align: center;
@@ -181,6 +247,17 @@ body::after {
   cursor: pointer;
 }
 .title-a11y-btn:hover { background: rgba(255,255,255,.1); }
+
+/* Light mode button - cohesive with overall design */
+@media (prefers-color-scheme: light) {
+  .title-a11y-btn {
+    background: rgba(26, 24, 22, .05);
+    border: 1px solid rgba(26, 24, 22, .14);
+  }
+  .title-a11y-btn:hover {
+    background: rgba(26, 24, 22, .09);
+  }
+}
 .title-a11y-btn:focus-visible { outline: 2px solid var(--math-teal); outline-offset: 2px; }
 
 /* Accessible variants for the title underline */
@@ -239,6 +316,19 @@ body::after {
   max-width: 100%;
   overflow: hidden;
 }
+
+/* Light mode panel styling - warm, editorial feel */
+@media (prefers-color-scheme: light) {
+  .panel {
+    background: linear-gradient(180deg, rgba(253, 252, 251, 0.8), rgba(253, 252, 251, 0.95)) padding-box,
+                linear-gradient(135deg,
+                  color-mix(in oklch, var(--math-teal) 18%, rgba(26, 24, 22, .08)),
+                  color-mix(in oklch, var(--math-violet) 16%, rgba(26, 24, 22, .06))
+                ) border-box;
+    box-shadow: 0 2px 8px rgba(26, 24, 22, .06), 0 0 0 1px rgba(26, 24, 22, .04) inset;
+  }
+}
+
 .panel-title { margin: 6px 0 12px; color: var(--text); font-weight: 600; }
 .panel-head {
   display: flex;
@@ -290,6 +380,19 @@ body::after {
   background: rgba(255, 255, 255, 0.3);
 }
 
+/* Light mode scrollbar - warm, subtle */
+@media (prefers-color-scheme: light) {
+  .katex-block {
+    scrollbar-color: rgba(26, 24, 22, 0.18) transparent;
+  }
+  .katex-block::-webkit-scrollbar-thumb {
+    background: rgba(26, 24, 22, 0.15);
+  }
+  .katex-block::-webkit-scrollbar-thumb:hover {
+    background: rgba(26, 24, 22, 0.25);
+  }
+}
+
 /* Additional mobile optimizations for very small screens (iPhone SE and smaller) */
 @media (max-width: 400px) {
   /* Make math even smaller on very small screens */
@@ -317,6 +420,13 @@ body::after {
   }
 }
 .cayley-wrap { width: 100%; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,.03); }
+
+/* Light mode Cayley wrap - subtle warm background */
+@media (prefers-color-scheme: light) {
+  .cayley-wrap {
+    background: rgba(26, 24, 22, .03);
+  }
+}
 .cayley-canvas { width: 100%; height: 100%; display: block; }
 .cayley-canvas {
   /* Ensure touch panning/zooming doesn't steal pointer events on mobile */
@@ -339,6 +449,15 @@ body::after {
   box-shadow: 0 6px 20px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.05) inset;
   pointer-events: none;
   white-space: nowrap;
+}
+
+/* Light mode tooltip - refined glass effect */
+@media (prefers-color-scheme: light) {
+  .cayley-tooltip {
+    border: 1px solid rgba(26, 24, 22, .12);
+    background: color-mix(in oklch, var(--math-teal) 10%, rgba(253, 252, 251, .96));
+    box-shadow: 0 6px 20px rgba(26, 24, 22, .15), 0 0 0 1px rgba(26, 24, 22, .05) inset;
+  }
 }
 
 .grid {
@@ -376,6 +495,18 @@ body::after {
   will-change: transform;
 }
 
+/* Light mode card styling - elevated, warm aesthetic */
+@media (prefers-color-scheme: light) {
+  .card {
+    background: linear-gradient(180deg, rgba(253, 252, 251, 0.9), rgba(253, 252, 251, 0.98)) padding-box,
+                linear-gradient(135deg,
+                  color-mix(in oklch, var(--math-gold) 16%, rgba(26, 24, 22, .08)),
+                  color-mix(in oklch, var(--math-violet) 14%, rgba(26, 24, 22, .06))
+                ) border-box;
+    box-shadow: 0 1px 4px rgba(26, 24, 22, .05), 0 0 0 1px rgba(26, 24, 22, .03) inset;
+  }
+}
+
 
 /* Avatar-blended background layer (semi-transparent, cover, non-distorting) */
 .card::before {
@@ -396,6 +527,14 @@ body::after {
   transform: translateY(-4px);
   border-color: rgba(255, 255, 255, .16);
   box-shadow: 0 6px 24px rgba(0, 0, 0, .25), 0 0 0 1px rgba(255,255,255,.06) inset;
+}
+
+/* Light mode card hover - subtle elevation */
+@media (prefers-color-scheme: light) {
+  .card:hover {
+    border-color: rgba(26, 24, 22, .14);
+    box-shadow: 0 8px 32px rgba(26, 24, 22, .10), 0 0 0 1px rgba(26, 24, 22, .06) inset;
+  }
 }
 
 /* Uniform size grid: no spanning for strict regularity */
@@ -474,6 +613,18 @@ body::after {
   transition: background .25s ease, transform .25s ease, box-shadow .25s ease, border-color .25s ease;
 }
 .link:hover { background: rgba(255, 255, 255, .06); border-color: rgba(255,255,255,.18); box-shadow: 0 0 0 6px var(--ring); transform: translateY(-1px); }
+
+/* Light mode link - warm, tactile feel */
+@media (prefers-color-scheme: light) {
+  .link {
+    border: 1px solid rgba(26, 24, 22, .12);
+    background: color-mix(in oklch, var(--math-violet) 8%, rgba(253, 252, 251, .7));
+  }
+  .link:hover {
+    background: rgba(26, 24, 22, .06);
+    border-color: rgba(26, 24, 22, .20);
+  }
+}
 .link.strong { font-weight: 600; font-size: 14px; }
 .back-links { gap: 12px; }
 .hint { color: var(--muted); font-size: 12px; opacity: .8; margin-top: 8px; display: inline-block; }
