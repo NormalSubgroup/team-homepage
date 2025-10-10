@@ -24,6 +24,8 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
   const hoverRef = useRef<{ i: number | null; x: number; y: number }>({ i: null, x: 0, y: 0 })
   const pointerInsideRef = useRef(false)
   const reduced = useReducedMotion()
+  // Allow overriding reduced-motion for auto spin via env
+  const alwaysSpin = (import.meta as any).env?.VITE_GRAPH_ALWAYS_SPIN !== 'false'
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -258,7 +260,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
 
     // V4 animate: linear yaw rotation; respect reduced-motion
     const startSpin = () => {
-      if (!doAnimate || reduced) return
+      if (!doAnimate || (reduced && !alwaysSpin)) return
       animRef.current = animate(stateRef.current, {
         yaw: stateRef.current.yaw + Math.PI * 2,
         duration: 30000,
@@ -267,7 +269,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
         onUpdate: draw,
       })
     }
-    if (doAnimate && !reduced) startSpin()
+    if (doAnimate && (!reduced || alwaysSpin)) startSpin()
 
     const ro = new ResizeObserver(() => { setSize(); draw() })
     ro.observe(canvas)
@@ -307,7 +309,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
       if (!dragRef.current.active) return
       dragRef.current.active = false
       const { vx, vy } = dragRef.current
-      if (Math.abs(vx) + Math.abs(vy) > 0.001 && !reduced) {
+      if (Math.abs(vx) + Math.abs(vy) > 0.001 && (!reduced || alwaysSpin)) {
         const target = { yaw: stateRef.current.yaw + vx * 800, pitch: stateRef.current.pitch + vy * 800 }
         animate(stateRef.current, { ...target, duration: 1200, ease: 'easeOutCubic', onUpdate: draw })
           .then(() => startSpin())
@@ -378,7 +380,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
       // Remove whichever listeners were attached
       try { listeners.forEach((off) => off()) } catch {}
     }
-  }, [n, generators.join(','), doAnimate, reduced, showLabels])
+  }, [n, generators.join(','), doAnimate, reduced, showLabels, alwaysSpin])
 
   return (
     <div className="cayley-wrap" style={{ position: 'relative' }}>
