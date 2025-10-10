@@ -194,20 +194,6 @@ body::after {
 .panel-head .panel-title { margin: 0; }
 .muted { color: var(--muted); margin: 8px 0 0; }
 .katex-block .katex { font-size: 20px; }
-/* Ensure display math never causes horizontal scrolling; allow visual scaling */
-.katex-logo,
-.katex-block,
-.katex-display {
-  max-width: 100%;
-  overflow: hidden; /* clip layout overflow; we scale inner .katex visually */
-}
-
-/* Prepare inner box for transform-based scaling when needed */
-.katex-display > .katex {
-  display: inline-block;
-  transform-origin: center top;
-  will-change: transform;
-}
 .cayley-wrap { width: 100%; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,.03); }
 .cayley-canvas { width: 100%; height: 100%; display: block; }
 .cayley-canvas {
