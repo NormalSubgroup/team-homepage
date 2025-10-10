@@ -1,8 +1,9 @@
 name: Deploy Pages
 
 on:
+  # Deploy after CI completes for the same SHA; CodeQL runs in parallel and does not gate deploy
   workflow_run:
-    workflows: ["CI", "CodeQL"]
+    workflows: ["CI"]
     types: [completed]
   workflow_dispatch:
 
@@ -24,7 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Gate on CI and CodeQL (for the same SHA)
+      - name: Gate on CI only (same SHA)
         id: gate
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -37,12 +38,8 @@ jobs:
           echo "Checking gates for $OWNER/$REPO @ $SHA"
           ci=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
             "https://api.github.com/repos/$OWNER/$REPO/actions/workflows/ci.yml/runs?head_sha=$SHA" | jq -r '.workflow_runs[0].conclusion // empty')
-          cq=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-            "https://api.github.com/repos/$OWNER/$REPO/actions/workflows/codeql.yml/runs?head_sha=$SHA" | jq -r '.workflow_runs[0].conclusion // empty')
-          echo "CI: $ci, CodeQL: $cq"
-          ready=false
-          if [ "$ci" = "success" ] && [ "$cq" = "success" ]; then ready=true; fi
-          echo "ready=$ready" >> $GITHUB_OUTPUT
+          echo "CI: $ci"
+          if [ "$ci" = "success" ]; then echo "ready=true" >> $GITHUB_OUTPUT; else echo "ready=false" >> $GITHUB_OUTPUT; fi
 
       - name: Setup Pages
         id: pages
