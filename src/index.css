@@ -60,6 +60,14 @@ body::before {
   mix-blend-mode: normal;
 }
 
+/* Ensure full-viewport coverage on mobile Safari and dynamic viewports */
+@supports (height: 100svh) {
+  body::before { bottom: auto; height: 100svh; left: 0; right: 0; top: 0; }
+}
+@supports (height: 100dvh) {
+  body::before { bottom: auto; height: 100dvh; left: 0; right: 0; top: 0; }
+}
+
 .page { position: relative; z-index: 1; display: grid; grid-template-rows: auto 1fr auto; min-height: 100%; }
 
 /* Fixed background spotlight moved to pseudo-element to avoid first-paint flicker */
@@ -100,6 +108,14 @@ body::after {
       color-mix(in oklch, var(--math-gold) 10%, transparent) 50%,
       transparent 80%
     );
+}
+
+/* Ensure the spotlight layer also covers the full dynamic viewport */
+@supports (height: 100svh) {
+  body::after { bottom: auto; height: 100svh; left: 0; right: 0; top: 0; }
+}
+@supports (height: 100dvh) {
+  body::after { bottom: auto; height: 100dvh; left: 0; right: 0; top: 0; }
 }
 
 .hero {
