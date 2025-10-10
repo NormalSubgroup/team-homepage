@@ -92,16 +92,21 @@ export default function GroupPanel({ group = 'Cn' }: Props) {
             } catch {}
           }}
         />
+        {/* 空一行（第一个公式后） */}
+        <div aria-hidden="true" style={{ height: '1em' }} />
         {caption && <p className="muted">{caption}</p>}
         <div
           className="katex-block"
           ref={(el) => {
             if (!el) return
             try {
-              katex.render(String.raw`\langle S \rangle = \bigcap \{ H \mid S \subseteq H \text{ 且 } H \le G \}`, el, { displayMode: true, throwOnError: false, strict: 'ignore' })
+              // 数学表达（无中文）：使用 \land 连接条件
+              katex.render(String.raw`\langle S \rangle = \bigcap \{ H \mid S \subseteq H \land H \le G \}`, el, { displayMode: true, throwOnError: false, strict: 'ignore' })
             } catch {}
           }}
         />
+        {/* 空一行（第二个公式后） */}
+        <div aria-hidden="true" style={{ height: '1em' }} />
         <div
           className="katex-block"
           ref={(el) => {
