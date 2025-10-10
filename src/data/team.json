@@ -60,14 +60,7 @@
       "https://huangx607087.online"
     ]
   },
-  {
-    "id": "Shin",
-    "avatar": "https://shinichicun.top/avatar.png",
-    "introduction": "Never forget, there will be echoes!",
-    "links": [
-      "https://shinichicun.top"
-    ]
-  },
+  
   {
     "id": "FariTree",
     "avatar": "https://faritree.top/images/Default_Emote-Thumbs_Up.png",
@@ -98,6 +91,14 @@
     "introduction": "苍山负雪，明烛天南",
     "links": [
       "https://mi1n9.github.io/"
+    ]
+  },
+  {
+    "id": "Shin",
+    "avatar": "https://shinichicun.top/avatar.png",
+    "introduction": "Never forget, there will be echoes!",
+    "links": [
+      "https://shinichicun.top"
     ]
   },
   {
