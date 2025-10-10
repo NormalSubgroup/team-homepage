@@ -52,7 +52,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
         if: ${{ steps.gate.outputs.ready == 'true' }}
 
       - name: Install deps (npm)
