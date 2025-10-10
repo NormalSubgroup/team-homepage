@@ -28,6 +28,14 @@
     ]
   },
   {
+    "id": "adwa",
+    "avatar": "https://languag3.github.io/images/avatar.jpg",
+    "introduction": "🦌",
+    "links": [
+      "https://languag3.github.io/"
+    ]
+  },
+  {
     "id": "Swizzer",
     "avatar": "https://pic.swizzer.cc/avatar.jpg",
     "introduction": "No, thank you!",
@@ -50,14 +58,6 @@
     "links": [
       "https://github.com/huangx607087",
       "https://huangx607087.online"
-    ]
-  },
-  {
-    "id": "adwa",
-    "avatar": "https://languag3.github.io/images/avatar.jpg",
-    "introduction": "🦌",
-    "links": [
-      "https://languag3.github.io/"
     ]
   },
   {
@@ -101,14 +101,6 @@
     ]
   },
   {
-    "id": "1ceS1amese",
-    "avatar": "https://q1.qlogo.cn/g?b=qq&nk=279113044&s=640",
-    "introduction": "命之歧路 何去何从",
-    "links": [
-      "https://1ces1amese.github.io/"
-    ]
-  },
-  {
     "id": "hokak",
     "avatar": "https://static.wikia.nocookie.net/undertale/images/0/0b/Annoying_Dog_sprite.gif",
     "introduction": "A gamer who specializes in Senren * Banka",
@@ -131,6 +123,14 @@
     "introduction": "To the Moon",
     "links": [
       "https://hackmd.io/@quanda"
+    ]
+  },
+  {
+    "id": "1ceS1amese",
+    "avatar": "https://q1.qlogo.cn/g?b=qq&nk=279113044&s=640",
+    "introduction": "命之歧路 何去何从",
+    "links": [
+      "https://1ces1amese.github.io/"
     ]
   },
   {
