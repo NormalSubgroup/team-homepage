@@ -54,7 +54,9 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
         el.style.position = 'absolute'
         el.style.left = '0px'
         el.style.top = '0px'
+        // Place via transform to avoid layout on every frame
         el.style.transform = 'translate(-50%, -50%)'
+        el.style.willChange = 'transform, opacity'
         el.style.pointerEvents = 'none'
         el.style.userSelect = 'none'
         el.style.color = 'inherit'
@@ -74,6 +76,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
       tip.style.left = '0px'
       tip.style.top = '0px'
       tip.style.transform = 'translate(-50%, -100%)'
+      tip.style.willChange = 'transform, opacity'
       tip.style.pointerEvents = 'none'
       tip.style.userSelect = 'none'
       tip.style.display = 'none'
@@ -223,11 +226,10 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
           const p = pts[i]
           const el = labelsRef.current[i]
           if (!el) continue
-          el.style.left = `${p.x}px`
-          el.style.top = `${p.y - 14}px`
+          // Move via transform to avoid layout thrash
+          el.style.transform = `translate3d(${p.x}px, ${p.y - 14}px, 0) translate(-50%, -50%) scale(${i === hoverIdx ? 1.05 : 1})`
           el.style.opacity = `${(p.z < 0 ? 0.3 : 0.85 + 0.15 * p.f).toFixed(2)}`
           el.style.zIndex = String(100 + Math.floor(p.f * 100))
-          el.style.transform = `translate(-50%, -50%) scale(${i === hoverIdx ? 1.05 : 1})`
         }
       }
 
@@ -236,8 +238,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
         const tip = tooltipRef.current
         if (hoverIdx >= 0) {
           const p = pts[hoverIdx]
-          tip.style.left = `${p.x}px`
-          tip.style.top = `${p.y - 24}px`
+          tip.style.transform = `translate3d(${p.x}px, ${p.y - 24}px, 0) translate(-50%, -100%)`
           tip.style.opacity = `${(p.z < 0 ? 0.6 : 1)}`
 
           // Resolve member by order: 0 -> founder, others map to members[i-1]
