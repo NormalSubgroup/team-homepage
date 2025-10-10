@@ -22,7 +22,8 @@ export default function GridSizer({ children, innerRef, gap = 18, ideal = 300, m
     const el = gridRef.current
     if (!el) return
 
-    const compute = () => {
+    let pending = false
+    const computeNow = () => {
       const width = el.clientWidth
       if (width <= 0) return
       let cols = Math.max(1, Math.floor((width + gap) / (ideal + gap)))
@@ -38,9 +39,13 @@ export default function GridSizer({ children, innerRef, gap = 18, ideal = 300, m
       el.style.setProperty('--gap', gap + 'px')
       // card width and height are computed in CSS from cols & gap
     }
+    const schedule = () => {
+      if (pending) return; pending = true
+      requestAnimationFrame(() => { pending = false; computeNow() })
+    }
 
-    compute()
-    const ro = new ResizeObserver(compute)
+    computeNow()
+    const ro = new ResizeObserver(schedule)
     ro.observe(el)
     return () => ro.disconnect()
   }, [gap, ideal, min, maxCols])

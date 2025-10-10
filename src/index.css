@@ -228,6 +228,9 @@ body::after {
   --card-h: calc(var(--card-w) * 0.66);
   grid-template-columns: repeat(var(--cols), var(--card-w));
   gap: var(--gap);
+  /* Avoid rendering work for offscreen content; provide intrinsic size */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1000px;
 }
 
 .card {

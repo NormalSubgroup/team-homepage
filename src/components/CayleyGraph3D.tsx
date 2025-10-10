@@ -15,6 +15,7 @@ type Props = {
 // Animation is driven by AnimeJS; labels are rendered via KaTeX.
 export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 / 2)], animate: doAnimate = true, showLabels = true }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const wrapRef = useRef<HTMLDivElement | null>(null)
   const layerRef = useRef<HTMLDivElement | null>(null)
   const labelsRef = useRef<HTMLDivElement[]>([])
   const tooltipRef = useRef<HTMLDivElement | null>(null)
@@ -24,6 +25,10 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
   const hoverRef = useRef<{ i: number | null; x: number; y: number }>({ i: null, x: 0, y: 0 })
   const pointerInsideRef = useRef(false)
   const reduced = useReducedMotion()
+  const alwaysSpin = (import.meta as any).env?.VITE_GRAPH_ALWAYS_SPIN !== 'false'
+  const visibleRef = useRef(true)
+  const lastDrawTimeRef = useRef(0)
+  const frameInterval = 1000 / 30 // ~30fps
   // Allow overriding reduced-motion for auto spin via env
   const alwaysSpin = (import.meta as any).env?.VITE_GRAPH_ALWAYS_SPIN !== 'false'
 
@@ -37,7 +42,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
     try { canvas.style.touchAction = 'none' } catch {}
 
     const setSize = () => {
-      const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1))
+      const dpr = Math.min(2, Math.max(1, Math.floor(window.devicePixelRatio || 1)))
       const rect = canvas.getBoundingClientRect()
       canvas.width = Math.max(1, Math.floor(rect.width * dpr))
       canvas.height = Math.max(1, Math.floor(rect.height * dpr))
@@ -136,6 +141,10 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
     }
 
     const draw = () => {
+      // Frame gating to ~30fps when not actively dragging
+      const now = performance.now()
+      if (!dragRef.current.active && now - lastDrawTimeRef.current < frameInterval) return
+      lastDrawTimeRef.current = now
       const rect = canvas.getBoundingClientRect()
       const w = rect.width
       const h = rect.height
@@ -261,7 +270,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
 
     // V4 animate: linear yaw rotation; respect reduced-motion
     const startSpin = () => {
-      if (!(doAnimate || alwaysSpin) || (reduced && !alwaysSpin)) return
+      if (!(doAnimate || alwaysSpin) || (reduced && !alwaysSpin) || !visibleRef.current) return
       animRef.current = animate(stateRef.current, {
         yaw: stateRef.current.yaw + Math.PI * 2,
         duration: 30000,
@@ -326,7 +335,7 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
     const supportsPointer = typeof window !== 'undefined' && 'onpointerdown' in window
     const listeners: Array<() => void> = []
     if (supportsPointer) {
-      canvas.addEventListener('pointerdown', onPointerDown as any)
+    canvas.addEventListener('pointerdown', onPointerDown as any)
       window.addEventListener('pointermove', onPointerMove as any)
       window.addEventListener('pointerup', onPointerUp as any)
       canvas.addEventListener('pointerleave', onPointerLeave)
@@ -373,6 +382,18 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
       )
     }
 
+    // Visibility observers: pause when not visible or page hidden
+    const resumeIfNeeded = () => { if ((doAnimate || alwaysSpin) && (!reduced || alwaysSpin) && visibleRef.current) startSpin() }
+    const pauseIfRunning = () => { try { animRef.current && animRef.current.pause && animRef.current.pause() } catch {} }
+    const visHandler = () => { visibleRef.current = !document.hidden; if (document.hidden) pauseIfRunning(); else resumeIfNeeded() }
+    document.addEventListener('visibilitychange', visHandler)
+    const io = new IntersectionObserver((entries) => {
+      const entry = entries[0]
+      visibleRef.current = !!entry?.isIntersecting
+      if (!visibleRef.current) pauseIfRunning(); else resumeIfNeeded()
+    })
+    io.observe(wrapRef.current || canvas)
+
     return () => {
       ro.disconnect()
       if (animRef.current && typeof animRef.current.pause === 'function') animRef.current.pause()
@@ -380,11 +401,13 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
       labelsRef.current = []
       // Remove whichever listeners were attached
       try { listeners.forEach((off) => off()) } catch {}
+      document.removeEventListener('visibilitychange', visHandler)
+      io.disconnect()
     }
   }, [n, generators.join(','), doAnimate, reduced, showLabels, alwaysSpin])
 
   return (
-    <div className="cayley-wrap" style={{ position: 'relative' }}>
+    <div ref={wrapRef} className="cayley-wrap" style={{ position: 'relative' }}>
       <canvas ref={canvasRef} className="cayley-canvas" aria-label={`Cayley graph 3D of C_${n}`} />
       <div ref={layerRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
         <div ref={tooltipRef} className="cayley-tooltip" aria-hidden="true" />
