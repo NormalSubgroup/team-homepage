@@ -1,5 +1,5 @@
 import React from 'react'
-import members from './data/team'
+import members, { founder } from './data/team'
 import MemberCard from './components/MemberCard'
 import type { UserProfile } from './types'
 import Backdrop from './components/Backdrop'
@@ -27,7 +27,7 @@ export default function App() {
         <GroupPanel />
         <h2 className="section-title">成员 Members</h2>
         <GridSizer ideal={300} min={240} gap={18}>
-          {(members as UserProfile[]).map((m, i) => (
+          {((founder ? [founder, ...members] : members) as UserProfile[]).map((m, i) => (
             <MemberCard key={m.id} member={m} index={i} />
           ))}
         </GridSizer>

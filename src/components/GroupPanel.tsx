@@ -92,11 +92,7 @@ export default function GroupPanel({ group = 'Cn' }: Props) {
           }}
         />
         {caption && <p className="muted">{caption}</p>}
-        {founder && (
-          <div className="special-member">
-            <MemberCard member={founder} index={-1} wide />
-          </div>
-        )}
+        {/* Founder 不再单独展示，已放入成员列表的第一位 */}
       </div>
 
       <div className="panel group-graph" role="figure" aria-label="Cayley graph">
