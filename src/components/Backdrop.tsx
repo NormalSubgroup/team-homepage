@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { animate, createSpring } from 'animejs'
+import { animate, spring } from 'animejs'
 import { useReducedMotion } from '../utils/motion'
 
 export default function Backdrop() {
@@ -43,9 +43,9 @@ export default function Backdrop() {
       animate(proxy.current, { x, y, duration: 400, ease: 'easeOutQuad', onUpdate: updateCSS })
     }
 
-    // Springs for natural-feel transitions (per Anime v4 docs)
-    const scatterSpring = createSpring({ mass: 1, stiffness: 70, damping: 14, velocity: 0 })
-    const settleSpring = createSpring({ mass: 1, stiffness: 130, damping: 22, velocity: 0 })
+    // Springs for natural-feel transitions (use spring() per Anime v4)
+    const scatterSpring = spring({ mass: 1, stiffness: 70, damping: 14, velocity: 0 })
+    const settleSpring = spring({ mass: 1, stiffness: 130, damping: 22, velocity: 0 })
 
     const relax = () => {
       // On blur/hidden: spotlight "散开" — expand radius and soften intensity
