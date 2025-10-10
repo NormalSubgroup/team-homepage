@@ -20,7 +20,7 @@ export default function App() {
           <Logo />
           <TeamTitle />
         </div>
-        <p className="subtitle">Vite · Rollup · Bun · React · AnimeJS</p>
+        <p className="subtitle">Vite (Rolldown) · TypeScript · React · KaTeX · AnimeJS · Iconify · Canvas 2D · Bun</p>
       </header>
 
       <main className="container">

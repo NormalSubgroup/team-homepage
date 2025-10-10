@@ -61,11 +61,11 @@
     ]
   },
   {
-    "id": "m1n9",
-    "avatar": "https://q.qlogo.cn/headimg_dl?dst_uin=2605742754&spec=640&img_type=jpg",
-    "introduction": "苍山负雪，明烛天南",
+    "id": "Shin",
+    "avatar": "https://shinichicun.top/avatar.png",
+    "introduction": "Never forget, there will be echoes!",
     "links": [
-      "https://mi1n9.github.io/"
+      "https://shinichicun.top"
     ]
   },
   {
@@ -93,11 +93,19 @@
     ]
   },
   {
-    "id": "Shin",
-    "avatar": "https://shinichicun.top/avatar.png",
-    "introduction": "Never forget, there will be echoes!",
+    "id": "m1n9",
+    "avatar": "https://q.qlogo.cn/headimg_dl?dst_uin=2605742754&spec=640&img_type=jpg",
+    "introduction": "苍山负雪，明烛天南",
     "links": [
-      "https://shinichicun.top"
+      "https://mi1n9.github.io/"
+    ]
+  },
+  {
+    "id": "忧郁沙茶",
+    "avatar": "https://avatars.githubusercontent.com/u/85718518?v=4",
+    "introduction": "我是傻逼",
+    "links": [
+      "https://github.com/Crabtux"
     ]
   },
   {
