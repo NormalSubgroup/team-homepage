@@ -29,8 +29,6 @@ export default function CayleyGraph3D({ n = 12, generators = [1, Math.floor(12 /
   const visibleRef = useRef(true)
   const lastDrawTimeRef = useRef(0)
   const frameInterval = 1000 / 30 // ~30fps
-  // Allow overriding reduced-motion for auto spin via env
-  const alwaysSpin = (import.meta as any).env?.VITE_GRAPH_ALWAYS_SPIN !== 'false'
 
   useEffect(() => {
     const canvas = canvasRef.current
